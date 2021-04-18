@@ -1,0 +1,38 @@
+---
+# https://docs.microsoft.com/ru-ru/dotnet/core/install/linux-snap
+
+# https://snapcraft.io/dotnet-runtime-21
+# https://snapcraft.io/dotnet-runtime-31
+# https://snapcraft.io/dotnet-runtime-50
+- name: Install {{ dotnet_product_fact }} {{ dotnet_default_component }} 4 any Linux over Snapd
+  when:
+    - ansible_architecture == 'x86_64'
+    - dotnet_default_component == 'runtime'
+  become: yes
+  snap:
+    name: "dotnet-runtime-{{ dotnet_channel_version_fact | replace('.', '') }}"
+    state: present
+  tags:
+    - linux
+    - dotnet
+    - snap
+    - snapd
+    - install
+
+# https://snapcraft.io/dotnet-sdk
+- name: Install {{ dotnet_product_fact }} {{ dotnet_default_component }} 4 any Linux over Snapd
+  when:
+    - ansible_architecture == 'x86_64'
+    - dotnet_default_component == 'sdk'
+  become: yes
+  snap:
+    name: dotnet-sdk
+    channel: '{{ dotnet_channel_version_fact }}'
+    classic: yes
+    state: present
+  tags:
+    - linux
+    - dotnet
+    - snap
+    - snapd
+    - install

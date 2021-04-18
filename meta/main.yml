@@ -1,0 +1,58 @@
+---
+galaxy_info:
+  author: don Rumata
+  description: Install dotnet for Linux and Windows
+  company: localhost
+
+  license: Apache License, Version 2.0
+
+  min_ansible_version: 2.8
+
+  platforms:
+    - name: Fedora
+      versions:
+        - 33
+    - name: Ubuntu
+      versions:
+        - trusty
+        - xenial
+        - bionic
+        - focal
+    - name: Debian
+      version:
+        - jessie
+        - stretch
+        - buster
+        - sid
+    # https://github.com/ansible/galaxy/issues/2072
+    - name: EL
+      versions:
+        - 7
+        - 8
+    - name: opensuse
+      vesrion:
+        - tumbleweed
+        - 15.2
+    # - name: ArchLinux
+    #   version:
+    #     - any
+    - name: Windows
+      version:
+        - 2008x64
+        - 2019
+
+  galaxy_tags:
+    - dotnet
+    - ".net"
+    - "c#"
+    - linux
+    - ubuntu
+    - debian
+    - fedora
+    - centos
+    - opensuse
+    - windows
+    - windows7
+    - windows10
+
+  dependencies: []

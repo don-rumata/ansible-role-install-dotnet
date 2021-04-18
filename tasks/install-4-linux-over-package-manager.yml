@@ -1,0 +1,105 @@
+---
+# https://docs.microsoft.com/ru-ru/dotnet/core/install/linux
+
+- name: Install {{ dotnet_product_fact }} {{ dotnet_default_component }} 4 Linux
+  when:
+    - ansible_system == 'Linux'
+    - ansible_architecture == 'x86_64'
+    # https://stackoverflow.com/a/30120360/5430535
+    - not (dotnet_current_version is defined)
+    # Да, не сильно в одном стиле, но мне пока в лом причёсывать.
+    - dotnet_default_component != 'aspnetcore-runtime'
+  become: yes
+  package:
+    name: "dotnet-{{ dotnet_default_component }}-{{ dotnet_channel_version_fact }}"
+    state: present
+  tags:
+    - linux
+    - dotnet
+    - runtime
+    - sdk
+
+#--- .Net custom version ---#
+
+- name: Install {{ dotnet_product_fact }} {{ dotnet_default_component }} {{ dotnet_current_version_fact }} 4 Debian\Ubuntu
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_pkg_mgr == 'apt'
+    # https://stackoverflow.com/a/30120360/5430535
+    - dotnet_current_version is defined
+    - dotnet_default_component != 'aspnetcore-runtime'
+  become: yes
+  apt:
+    # https://docs.ansible.com/ansible/2.9/modules/apt_module.html#parameter-name
+    name: "dotnet-{{ dotnet_default_component }}-{{ dotnet_channel_version_fact }}={{ dotnet_current_version_fact }}"
+    install_recommends: yes
+    state: present
+  tags:
+    - linux
+    - debian
+    - ubuntu
+    - dotnet
+    - runtime
+    - sdk
+
+# https://unix.stackexchange.com/a/151690
+- name: Install {{ dotnet_product_fact }} {{ dotnet_default_component }} {{ dotnet_current_version_fact }} 4 CentOS\RHEL
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_pkg_mgr == 'yum'
+    # https://stackoverflow.com/a/30120360/5430535
+    - dotnet_current_version is defined
+    - dotnet_default_component != 'aspnetcore-runtime'
+  vars:
+    # https://stackoverflow.com/a/47091066/5430535
+    # https://github.com/ansible/ansible/issues/32532#issuecomment-341641007
+    ansible_python_interpreter: /usr/bin/python2.7
+  become: yes
+  yum:
+    # https://docs.ansible.com/ansible/2.9/modules/apt_module.html#parameter-name
+    name: "dotnet-{{ dotnet_default_component }}-{{ dotnet_channel_version_fact }}-{{ dotnet_current_version_fact }}"
+    state: present
+  tags:
+    - linux
+    - centos
+    - rhel
+    - dotnet
+    - runtime
+    - sdk
+
+#--- .Net custom version ---#
+
+#--- ASP.NET ---#
+
+- name: Install {{ dotnet_product_fact }} {{ dotnet_default_component }} 4 Linux
+  when:
+    - ansible_system == 'Linux'
+    - ansible_architecture == 'x86_64'
+    - not (dotnet_current_version is defined)
+    - dotnet_default_component == 'aspnetcore-runtime'
+  become: yes
+  package:
+    name: "aspnetcore-runtime-{{ dotnet_channel_version_fact }}"
+    state: present
+  tags:
+    - linux
+    - dotnet
+    - aspnetcore
+
+- name: Install {{ dotnet_product_fact }} {{ dotnet_default_component }} 4 Debian\Ubuntu
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_pkg_mgr == 'apt'
+    - dotnet_current_version is defined
+    - dotnet_default_component == 'aspnetcore-runtime'
+  become: yes
+  apt:
+    name: "aspnetcore-runtime-{{ dotnet_channel_version_fact }}={{ dotnet_current_version_fact }}"
+    install_recommends: yes
+    state: present
+  tags:
+    - linux
+    - dotnet
+    - aspnetcore
+
+#--- ASP.NET ---#

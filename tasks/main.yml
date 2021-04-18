@@ -1,0 +1,18 @@
+---
+- import_tasks: update-cache.yml
+  when: ansible_virtualization_type == 'docker'
+
+- import_tasks: install-dependencies.yml
+
+- import_tasks: get-dotnet-version-and-set-facts-1.yml
+
+- import_tasks: add-repo.yml
+  when: ansible_system == 'Linux'
+
+- import_tasks: get-dotnet-version-and-set-facts-2.yml
+
+- import_tasks: install-4-linux-over-{{ dotnet_method_install }}.yml
+  when: ansible_system == 'Linux'
+
+- import_tasks: install-4-windows.yml
+  when: ansible_os_family == 'Windows'

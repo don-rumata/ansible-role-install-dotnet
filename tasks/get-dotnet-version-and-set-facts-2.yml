@@ -1,0 +1,34 @@
+---
+# https://ru.stackoverflow.com/a/1164450/191416
+
+- name: Find .NET versions on Debian\Ubuntu over shell
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_pkg_mgr == 'apt'
+    - dotnet_current_version is defined
+  # # 4 debug
+  # vars:
+  #   dotnet_current_version: 3.1.6
+  environment:
+    LANG: C
+    LC_ALL: C
+  shell: apt-cache show dotnet-{{ dotnet_default_component }}-* | grep -E -i '(Package:|Version:)' | tr '\n' ' ' | sed 's| Package|\nPackage|g' | grep -v -i deps
+  register: dotnet_current_version_list
+  changed_when: dotnet_current_version_list.rc != 0
+
+- name: Get current .NET version 4 install over shell
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_pkg_mgr == 'apt'
+    - dotnet_current_version is defined
+  # # 4 debug
+  # vars:
+  #   dotnet_current_version: 3.1.6
+  block:
+    - set_fact:
+        # https://stackoverflow.com/a/55047177/5430535
+        dotnet_package_and_version_in_on_line_fact: "{{ dotnet_current_version_list.stdout | regex_search('.*' + dotnet_current_version + '.*') }}"
+    - set_fact:
+        dotnet_current_packagename_fact: "{{ dotnet_package_and_version_in_on_line_fact.split(' ')[1] }}"
+    - set_fact:
+        dotnet_current_version_fact: "{{ dotnet_package_and_version_in_on_line_fact.split(' ')[3] }}"

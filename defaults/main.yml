@@ -1,0 +1,54 @@
+---
+#--- Release section ---#
+# https://dotnet.microsoft.com/download/dotnet-core
+
+dotnet_support_phase: current
+# dotnet_support_phase: lts
+# dotnet_support_phase: preview
+# # dotnet_support_phase: eol
+
+dotnet_default_component: runtime
+# dotnet_default_component: sdk
+# dotnet_default_component: hosting
+# dotnet_default_component: aspnetcore-runtime
+
+# TODO
+# dotnet_default_component: aspnetcore-targeting-pack-5.0
+
+# dotnet_current_releases_json: https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/5.0/releases.json
+# dotnet_current_channel_version: 5.0
+
+# TODO.
+# dotnet_current_release: 5.0.3
+# dotnet_current_runtime: 5.0.3
+# dotnet_current_sdk: 5.0.200
+# dotnet_current_aspnetcore_runtime:
+
+# For install custom version for Linux. sudo apt-get install dotnet-runtime-5.0=5.0.3-1
+# dotnet_current_version: 5.0.3-1
+
+# If you have a copy on your local network
+# dotnet_runtime_or_sdk_win_x64_exe_url: http://10.10.10.10/soft/dotnet/dotnet-{{ dotnet_default_component }}-latest-win-amd64.exe
+
+#--- Method install section ---#
+
+dotnet_method_install: package-manager
+
+# https://en.wikipedia.org/wiki/Snappy_(package_manager)
+# https://snapcraft.io/search?q=dotnetcore
+# dotnet_method_install: snap
+
+#--- Urls section ---#
+# https://docs.microsoft.com/en-us/dotnet/core/install/linux
+
+dotnet_releases_index_json_url: https://raw.githubusercontent.com/dotnet/core/master/release-notes/releases-index.json
+
+#--- Repo section ---#
+
+dotnet_repo_deb_key: https://packages.microsoft.com/keys/microsoft.asc
+
+dotnet_repo_rpm_key: https://packages.microsoft.com/keys/microsoft.asc
+
+# If you *NOT* use apt-cacher-ng or other caching proxy - select "https".
+http_or_https: http
+# http_or_https: https

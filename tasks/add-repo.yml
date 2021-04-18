@@ -1,0 +1,127 @@
+---
+# https://docs.microsoft.com/ru-ru/windows-server/administration/linux-package-repository-for-microsoft-software
+
+# https://packages.microsoft.com/config/ubuntu/18.04/multiarch/prod.list
+# https://packages.microsoft.com/config/debian/10/prod.list
+# https://docs.microsoft.com/ru-ru/dotnet/core/install/linux-ubuntu
+# https://docs.microsoft.com/ru-ru/dotnet/core/install/linux-debian
+- name: Add dotnet repo key 4 Debian\Ubuntu
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_pkg_mgr == 'apt'
+  become: yes
+  apt_key:
+    url: "{{ dotnet_repo_deb_key }}"
+    state: present
+
+- name: Add dotnet repo 4 Debian\Ubuntu
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_architecture == 'x86_64'
+    - ansible_pkg_mgr == 'apt'
+  become: yes
+  apt_repository:
+    repo: '{{ item }}'
+    state: present
+    filename: microsoft-prod
+  with_items:
+    - deb [arch=amd64] {{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_version }}/prod {{ ansible_distribution_release }} main
+  tags:
+    - linux
+    - ubuntu
+    - dotnet
+    - c#
+
+#---
+
+# https://packages.microsoft.com/config/rhel/7/prod.repo
+# https://docs.microsoft.com/ru-ru/dotnet/core/install/linux-centos
+# sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
+- name: Add repo dotnet 4 CentOS\RHEL
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_pkg_mgr == 'yum'
+  become: yes
+  vars:
+    # https://stackoverflow.com/a/47091066/5430535
+    # https://github.com/ansible/ansible/issues/32532#issuecomment-341641007
+    ansible_python_interpreter: /usr/bin/python2.7
+  yum_repository:
+    file: microsoft-prod
+    name: packages-microsoft-com-prod
+    description: packages-microsoft-com-prod
+    baseurl: '{{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_major_version }}/prod'
+    gpgkey: '{{ dotnet_repo_rpm_key }}'
+    enabled: yes
+    gpgcheck: yes
+    state: present
+
+# https://packages.microsoft.com/config/fedora/32/prod.repo
+# https://docs.microsoft.com/ru-ru/dotnet/core/install/linux-fedora
+- name: Add repo dotnet 4 Fedora\CentOS 8+
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_pkg_mgr == 'dnf'
+  become: yes
+  yum_repository:
+    file: microsoft-prod
+    name: packages-microsoft-com-prod
+    description: packages-microsoft-com-prod
+    baseurl: '{{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_major_version }}/prod'
+    gpgkey: '{{ dotnet_repo_rpm_key }}'
+    enabled: yes
+    gpgcheck: yes
+    state: present
+
+#---
+
+# https://packages.microsoft.com/config/opensuse/15/prod.repo
+# https://docs.microsoft.com/ru-ru/dotnet/core/install/linux-opensuse
+- name: Add repo dotnet 4 openSUSE Leap
+  when:
+    - ansible_system == 'Linux'
+    - ansible_os_family == 'Suse'
+    - ansible_pkg_mgr == 'zypper'
+    - ansible_distribution == 'openSUSE Leap'
+  become: yes
+  block:
+    - copy:
+        content: |
+          [packages-microsoft-com-prod]
+          name=packages-microsoft-com-prod
+          baseurl={{ http_or_https }}://packages.microsoft.com/opensuse/{{ ansible_lsb.major_release }}/prod/
+          gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+          enabled=1
+          autorefresh=1
+          gpgcheck=1
+        dest: /etc/zypp/repos.d/packages-microsoft-com-prod.repo
+    # Don't support "apt_key"-like function.
+    - zypper_repository:
+        name: packages-microsoft-com-prod
+        repo: '{{ http_or_https }}://packages.microsoft.com/opensuse/{{ ansible_lsb.major_release }}/prod/'
+        state: present
+        auto_import_keys: yes
+        runrefresh: yes
+        autorefresh: yes
+
+- name: Add repo dotnet 4 openSUSE Tumbleweed
+  when:
+    - ansible_system == 'Linux'
+    - ansible_os_family == 'Suse'
+    - ansible_pkg_mgr == 'zypper'
+    - ansible_distribution == 'openSUSE Tumbleweed'
+    - dotnet_method_install != 'snap'
+  # https://stackoverflow.com/a/41356234
+  fail:
+    msg:
+      - "Fuc^W Microsoft don't support repo 4 openSUSE Tumbleweed: https://github.com/dotnet/runtime/issues/3527"
+      - "Try install .NET over Snap:"
+      - "1. Install Snap: https://github.com/don-rumata/ansible-role-install-snap"
+      - "2. Use var 'dotnet_method_install: snap'"
+      - "3. ?????"
+      - "4. PROFIT"
+
+# - package_facts:
+
+# # 4 debug
+# - pause:

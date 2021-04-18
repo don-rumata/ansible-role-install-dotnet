@@ -1,0 +1,43 @@
+---
+- name: Install {{ dotnet_product_fact }} {{ dotnet_default_component }} 4 Windows
+  when:
+    - ansible_os_family == 'Windows'
+    - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
+    - dotnet_default_component != 'aspnetcore-runtime'
+  become: yes
+  become_method: runas
+  become_flags: logon_type=new_credentials logon_flags=netcredentials_only
+  win_package:
+    path: '{{ dotnet_runtime_or_sdk_win_x64_exe_url_fact }}'
+    creates_path: '{{ dotnet_windows_creates_path_fact }}'
+    arguments:
+      - /install /passive /quiet /norestart
+  tags:
+    - windows
+    - net-framework
+    - net-core
+    - dotnet
+    - runtime
+    - install
+
+- name: Install {{ dotnet_product_fact }} {{ dotnet_default_component }} 4 Windows
+  when:
+    - ansible_os_family == 'Windows'
+    - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
+    - dotnet_default_component == 'aspnetcore-runtime'
+  become: yes
+  become_method: runas
+  become_flags: logon_type=new_credentials logon_flags=netcredentials_only
+  win_package:
+    path: '{{ dotnet_aspnetcore_runtime_win_x64_exe_url_fact }}'
+    creates_path: '{{ dotnet_windows_creates_path_fact }}'
+    arguments:
+      - /install /passive /quiet /norestart
+  tags:
+    - windows
+    - net-framework
+    - net-core
+    - dotnet
+    - runtime
+    - aspnetcore
+    - install

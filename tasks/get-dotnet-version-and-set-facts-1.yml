@@ -1,0 +1,228 @@
+---
+# Дёргаем https://raw.githubusercontent.com/dotnet/core/master/release-notes/releases-index.json
+- name: Get releases index info from API
+  uri:
+    url: "{{ dotnet_releases_index_json_url }}"
+    method: GET
+    return_content: yes
+  delegate_to: localhost
+  register: dotnet_releases_index
+
+# https://github.com/jmespath/jp/issues/8
+# TODO. Причесать name:, а то выглядит по-ушлёпски.
+# Парсим содержимое https://raw.githubusercontent.com/dotnet/core/master/release-notes/releases-index.json
+# curl -s https://raw.githubusercontent.com/dotnet/core/master/release-notes/releases-index.json | jp '"releases-index" | [?"support-phase" == `"lts"`] | [0] | "releases.json"'
+
+- name: Set fact about dotnet channel version
+  vars:
+    query_dotnet_channel_version:
+      '"releases-index"
+      | [?"support-phase" == `{{ dotnet_support_phase }}`]
+      | [0]
+      | "channel-version"'
+  set_fact:
+    dotnet_channel_version_fact:
+      "{{ dotnet_current_channel_version
+      | default(dotnet_releases_index.json
+      | json_query(query_dotnet_channel_version)) }}"
+
+# # 4 debug
+# - pause:
+
+# "channel-version": "3.1",
+# "latest-release": "3.1.6",
+# "latest-runtime": "3.1.6",
+# "latest-sdk": "3.1.302",
+- name: Set fact about dotnet url 4 {{ dotnet_support_phase }} releases.json
+  vars:
+    query_dotnet_releases_json:
+      '"releases-index"
+      | [?"channel-version" == `"{{ dotnet_channel_version_fact }}"`]
+      | [0]
+      | "releases.json"'
+    # query_dotnet_channel_version:
+    query_dotnet_latest_release:
+      '"releases-index"
+      | [?"channel-version" == `"{{ dotnet_channel_version_fact }}"`]
+      | [0]
+      | "latest-release"'
+    query_dotnet_latest_runtime:
+      '"releases-index"
+      | [?"channel-version" == `"{{ dotnet_channel_version_fact }}"`]
+      | [0]
+      | "latest-runtime"'
+    query_dotnet_latest_sdk:
+      '"releases-index"
+      | [?"channel-version" == `"{{ dotnet_channel_version_fact }}"`]
+      | [0]
+      | "latest-sdk"'
+    query_dotnet_latest_aspnetcore_runtime:
+      '"releases-index"
+      | [?"channel-version" == `"{{ dotnet_channel_version_fact }}"`]
+      | [0]
+      | "latest-runtime"'
+    query_dotnet_product:
+      '"releases-index"
+      | [?"channel-version" == `"{{ dotnet_channel_version_fact }}"`]
+      | [0]
+      | "product"'
+  set_fact:
+# dotnet_current_releases_json: https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/5.0/releases.json
+# dotnet_current_channel_version: 5.0
+# dotnet_current_release: 5.0.3
+# dotnet_current_runtime: 5.0.3
+# dotnet_current_sdk: 5.0.200
+    dotnet_releases_json_fact:
+      "{{ dotnet_current_releases_json
+      | default(dotnet_releases_index.json
+      | json_query(query_dotnet_releases_json)) }}"
+    # dotnet_channel_version_fact:
+    dotnet_latest_release_fact:
+      "{{ dotnet_current_release
+      | default(dotnet_releases_index.json
+      | json_query(query_dotnet_latest_release)) }}"
+    dotnet_latest_runtime_fact:
+      "{{ dotnet_current_runtime
+      | default(dotnet_releases_index.json
+      | json_query(query_dotnet_latest_runtime)) }}"
+    dotnet_latest_sdk_fact:
+      "{{ dotnet_current_sdk
+      | default(dotnet_releases_index.json
+      | json_query(query_dotnet_latest_sdk)) }}"
+    dotnet_latest_aspnetcore_runtime_fact:
+      "{{ dotnet_current_aspnetcore_runtime
+      | default(dotnet_releases_index.json
+      | json_query(query_dotnet_latest_aspnetcore_runtime)) }}"
+    dotnet_product_fact:
+      "{{ dotnet_releases_index.json
+      | json_query(query_dotnet_product) }}"
+
+# # 4 debug
+# - pause:
+
+# Дёргаем https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/3.1/releases.json
+- name: Get current release info from API
+  uri:
+    url: "{{ dotnet_releases_json_fact }}"
+    method: GET
+    return_content: yes
+  delegate_to: localhost
+  register: dotnet_releases_json
+
+# Парсим содержмое https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/3.1/releases.json
+# curl -s https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/3.1/releases.json | jp 'releases[0] | runtime | files[] | [?"name" == `"dotnet-runtime-win-x64.exe"`] | [0] | url'
+- name: Get download link 4 Windows
+  when:
+    - ansible_os_family == 'Windows'
+  vars:
+    # query_dotnet_runtime_or_sdk_win_x86_exe_url:
+    #   '"releases"[0]
+    #   | "{{ dotnet_default_component }}"
+    #   | "files"[]
+    #   | [?"name" == `"dotnet-{{ dotnet_default_component }}-win-x86.exe"`]
+    #   | [0]
+    #   | "url"'
+    query_dotnet_runtime_or_sdk_win_x64_exe_url:
+      '"releases"[0]
+      | "{{ dotnet_default_component }}"
+      | "files"[]
+      | [?"name" == `"dotnet-{{ dotnet_default_component }}-win-x64.exe"`]
+      | [0]
+      | "url"'
+    query_dotnet_aspnetcore_runtime_win_x64_exe_url:
+      '"releases"[0]
+      | "{{ dotnet_default_component }}"
+      | "files"[]
+      | [?"name" == `"aspnetcore-runtime-win-x64.exe"`]
+      | [0]
+      | "url"'
+    # query_dotnet_runtime_or_sdk_win_x86_exe_hash:
+    #   '"releases"[0]
+    #   | "{{ dotnet_default_component }}"
+    #   | "files"[]
+    #   | [?"name" == `"dotnet-{{ dotnet_default_component }}-win-x86.exe"`]
+    #   | [0]
+    #   | "hash"'
+    query_dotnet_runtime_or_sdk_win_x64_exe_hash:
+      '"releases"[0]
+      | "{{ dotnet_default_component }}"
+      | "files"[]
+      | [?"name" == `"dotnet-{{ dotnet_default_component }}-win-x64.exe"`]
+      | [0]
+      | "hash"'
+  block:
+    # - set_fact:
+    #     dotnet_runtime_or_sdk_win_x86_exe_url_fact:
+    #       "{{ dotnet_releases_json.json
+    #       | json_query(query_dotnet_runtime_or_sdk_win_x86_exe_url) }}"
+    #   when:
+    #     - ansible_env.PROCESSOR_ARCHITECTURE == 'x86'
+    - set_fact:
+        dotnet_runtime_or_sdk_win_x86_exe_hash_fact:
+          "{{ dotnet_releases_json.json
+          | json_query(query_dotnet_runtime_or_sdk_win_x86_exe_hash) }}"
+      when:
+        - ansible_env.PROCESSOR_ARCHITECTURE == 'x86'
+    - set_fact:
+        dotnet_runtime_or_sdk_win_x64_exe_url_fact:
+          "{{ dotnet_runtime_or_sdk_win_x64_exe_url
+          | default(dotnet_releases_json.json
+          | json_query(query_dotnet_runtime_or_sdk_win_x64_exe_url)) }}"
+      when:
+        - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
+    - set_fact:
+        dotnet_aspnetcore_runtime_win_x64_exe_url_fact:
+          "{{ dotnet_runtime_or_sdk_win_x64_exe_url
+          | default(dotnet_releases_json.json
+          | json_query(query_dotnet_aspnetcore_runtime_win_x64_exe_url)) }}"
+      when:
+        - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
+    # - set_fact:
+    #     dotnet_runtime_or_sdk_win_x64_exe_hash_fact:
+    #       "{{ dotnet_runtime_or_sdk_win_x64_exe_url
+    #       | default(dotnet_releases_json.json
+    #       | json_query(query_dotnet_runtime_or_sdk_win_x64_exe_hash)) }}"
+    #   when:
+    #     - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
+
+# # dotnet-runtime-3.1.6-win-x64.exe
+# - name: Set fact about dotnet output file after download
+#   when:
+#     - ansible_os_family == 'Windows'
+#   block:
+#     - set_fact:
+#         dotnet_installer_file: "{{ dotnet_runtime_or_sdk_win_x86_exe_url_fact | urlsplit('path') | basename }}"
+#       when:
+#         - ansible_env.PROCESSOR_ARCHITECTURE == 'x84'
+#     - set_fact:
+#         dotnet_installer_file: "{{ dotnet_runtime_or_sdk_win_x64_exe_url_fact | urlsplit('path') | basename }}"
+#       when:
+#         - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
+
+# C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App\5.0.3
+# "C:\Program Files\dotnet\swidtag\Microsoft .NET Runtime - 5.0.3 (x64).swidtag"
+# https://docs.ansible.com/ansible/2.9/modules/win_package_module.html#parameter-creates_path
+- name: Set fact about dotnet "creates_path" (because fucking "product_id" not work)
+  when:
+    - ansible_os_family == 'Windows'
+  block:
+    - set_fact:
+        dotnet_windows_creates_path_fact: '%ProgramFiles%\dotnet\shared\Microsoft.AspNetCore.App\{{ dotnet_latest_runtime_fact }}\'
+      when:
+        - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
+        - dotnet_default_component == 'hosting'
+    - set_fact:
+        dotnet_windows_creates_path_fact: '%ProgramFiles%\dotnet\swidtag\Microsoft {{ dotnet_product_fact }} Runtime - {{ dotnet_latest_runtime_fact }} (x64).swidtag'
+      when:
+        - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
+        - dotnet_default_component == 'runtime'
+    - set_fact:
+        dotnet_windows_creates_path_fact: '%ProgramFiles%\dotnet\sdk\{{ dotnet_latest_runtime_fact }}\'
+      when:
+        - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
+        - dotnet_default_component == 'sdk'
+    - set_fact:
+        dotnet_windows_creates_path_fact: '%ProgramFiles%\dotnet\shared\Microsoft.AspNetCore.App\{{ dotnet_latest_runtime_fact }}\'
+      when:
+        - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
+        - dotnet_default_component == 'aspnetcore-runtime'
