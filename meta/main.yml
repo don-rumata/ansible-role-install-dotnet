@@ -43,8 +43,7 @@ galaxy_info:
 
   galaxy_tags:
     - dotnet
-    - ".net"
-    - "c#"
+    - csharp
     - linux
     - ubuntu
     - debian

@@ -21,11 +21,14 @@
     - ansible_pkg_mgr == 'apt'
   become: yes
   apt_repository:
-    repo: '{{ item }}'
+    repo:
+      'deb [arch=amd64]
+      {{ http_or_https }}://packages.microsoft.com/
+      {{ ansible_lsb.id | lower }}/
+      {{ ansible_distribution_version }}/
+      prod {{ ansible_distribution_release }} main'
     state: present
     filename: microsoft-prod
-  with_items:
-    - deb [arch=amd64] {{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_version }}/prod {{ ansible_distribution_release }} main
   tags:
     - linux
     - ubuntu

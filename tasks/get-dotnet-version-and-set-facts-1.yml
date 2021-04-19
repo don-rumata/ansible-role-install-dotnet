@@ -207,22 +207,26 @@
     - ansible_os_family == 'Windows'
   block:
     - set_fact:
-        dotnet_windows_creates_path_fact: '%ProgramFiles%\dotnet\shared\Microsoft.AspNetCore.App\{{ dotnet_latest_runtime_fact }}\'
+        dotnet_windows_creates_path_fact:
+          '%ProgramFiles%\dotnet\shared\Microsoft.AspNetCore.App\{{ dotnet_latest_runtime_fact }}\'
       when:
         - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
         - dotnet_default_component == 'hosting'
     - set_fact:
-        dotnet_windows_creates_path_fact: '%ProgramFiles%\dotnet\swidtag\Microsoft {{ dotnet_product_fact }} Runtime - {{ dotnet_latest_runtime_fact }} (x64).swidtag'
+        dotnet_windows_creates_path_fact:
+          '%ProgramFiles%\dotnet\swidtag\Microsoft {{ dotnet_product_fact }} Runtime - {{ dotnet_latest_runtime_fact }} (x64).swidtag'
       when:
         - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
         - dotnet_default_component == 'runtime'
     - set_fact:
-        dotnet_windows_creates_path_fact: '%ProgramFiles%\dotnet\sdk\{{ dotnet_latest_runtime_fact }}\'
+        dotnet_windows_creates_path_fact:
+          '%ProgramFiles%\dotnet\sdk\{{ dotnet_latest_runtime_fact }}\'
       when:
         - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
         - dotnet_default_component == 'sdk'
     - set_fact:
-        dotnet_windows_creates_path_fact: '%ProgramFiles%\dotnet\shared\Microsoft.AspNetCore.App\{{ dotnet_latest_runtime_fact }}\'
+        dotnet_windows_creates_path_fact:
+          '%ProgramFiles%\dotnet\shared\Microsoft.AspNetCore.App\{{ dotnet_latest_runtime_fact }}\'
       when:
         - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
         - dotnet_default_component == 'aspnetcore-runtime'

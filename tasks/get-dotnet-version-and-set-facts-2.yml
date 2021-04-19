@@ -12,7 +12,13 @@
   environment:
     LANG: C
     LC_ALL: C
-  shell: apt-cache show dotnet-{{ dotnet_default_component }}-* | grep -E -i '(Package:|Version:)' | tr '\n' ' ' | sed 's| Package|\nPackage|g' | grep -v -i deps
+  shell:
+    set -o pipefail
+    apt-cache show dotnet-{{ dotnet_default_component }}-*
+    | grep -E -i '(Package:|Version:)'
+    | tr '\n' ' '
+    | sed 's| Package|\nPackage|g'
+    | grep -v -i deps
   register: dotnet_current_version_list
   changed_when: dotnet_current_version_list.rc != 0
 
@@ -27,8 +33,12 @@
   block:
     - set_fact:
         # https://stackoverflow.com/a/55047177/5430535
-        dotnet_package_and_version_in_on_line_fact: "{{ dotnet_current_version_list.stdout | regex_search('.*' + dotnet_current_version + '.*') }}"
+        dotnet_package_and_version_in_on_line_fact:
+          "{{ dotnet_current_version_list.stdout
+          | regex_search('.*' + dotnet_current_version + '.*') }}"
     - set_fact:
-        dotnet_current_packagename_fact: "{{ dotnet_package_and_version_in_on_line_fact.split(' ')[1] }}"
+        dotnet_current_packagename_fact:
+          "{{ dotnet_package_and_version_in_on_line_fact.split(' ')[1] }}"
     - set_fact:
-        dotnet_current_version_fact: "{{ dotnet_package_and_version_in_on_line_fact.split(' ')[3] }}"
+        dotnet_current_version_fact:
+          "{{ dotnet_package_and_version_in_on_line_fact.split(' ')[3] }}"

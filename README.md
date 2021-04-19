@@ -115,7 +115,7 @@ Over `bash+git`:
 
 ```bash
 mkdir -p "$HOME/.ansible/roles"
-cd "$HOME/.ansible/roles
+cd "$HOME/.ansible/roles"
 git clone https://github.com/don-rumata/ansible-role-install-dotnet don_rumata.ansible_role_install_dotnet
 ```
 
