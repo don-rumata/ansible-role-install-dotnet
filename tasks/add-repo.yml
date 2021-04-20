@@ -23,10 +23,9 @@
   apt_repository:
     repo:
       'deb [arch=amd64]
-      {{ http_or_https }}://packages.microsoft.com/
-      {{ ansible_lsb.id | lower }}/
-      {{ ansible_distribution_version }}/
-      prod {{ ansible_distribution_release }} main'
+      {{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_version }}/prod
+      {{ ansible_distribution_release }}
+      main'
     state: present
     filename: microsoft-prod
   tags:
