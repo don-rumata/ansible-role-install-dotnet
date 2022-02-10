@@ -52,8 +52,8 @@ Install [.NET](https://dotnet.microsoft.com/download) for Linux and Windows.
 #--- Release section ---#
 # https://dotnet.microsoft.com/download/dotnet-core
 
-dotnet_support_phase: current
-# dotnet_support_phase: lts
+dotnet_support_phase: lts
+# dotnet_support_phase: current
 # dotnet_support_phase: preview
 # # dotnet_support_phase: eol
 
