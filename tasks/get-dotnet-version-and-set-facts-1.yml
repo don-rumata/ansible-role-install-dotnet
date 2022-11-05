@@ -97,8 +97,14 @@
       "{{ dotnet_releases_index.json
       | json_query(query_dotnet_product) }}"
 
-# # 4 debug
-# - pause:
+- name: Alarm
+  fail:
+    msg:
+      dotnet_latest_release_fact or dotnet_releases_json_fact variables are empty. You have to set value to this variable.
+  when:
+    - dotnet_releases_json_fact | length == 0
+      or
+      dotnet_latest_release_fact | length == 0
 
 # Дёргаем https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/3.1/releases.json
 - name: Get current release info from API
