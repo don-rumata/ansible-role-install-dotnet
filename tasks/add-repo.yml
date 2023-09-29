@@ -20,19 +20,30 @@
     - ansible_architecture == 'x86_64'
     - ansible_pkg_mgr == 'apt'
   become: yes
-  apt_repository:
-    repo:
-      'deb [arch=amd64]
-      {{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_version }}/prod
-      {{ ansible_distribution_release }}
-      main'
-    state: present
-    filename: microsoft-prod
+  block:
+    - apt_repository:
+        repo:
+          'deb [arch=amd64]
+          {{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_version }}/prod
+          {{ ansible_distribution_release }}
+          main'
+        state: absent
+        filename: microsoft-prod
+    - copy:
+        dest: "{{ dotnet_apt_repo_path_to_sources }}"
+        content: "{{ apt_repo_deb822 | to_nice_yaml }}"
+        mode: '0644'
+      register: add_apt_repo
+    - apt:
+        update_cache: yes
+      when: add_apt_repo.changed == true
   tags:
     - linux
+    - debian
     - ubuntu
     - dotnet
     - c#
+    - csharp
 
 #---
 

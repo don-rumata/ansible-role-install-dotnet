@@ -1,4 +1,7 @@
 ---
+- include_vars:
+    dir: vars/main
+
 - import_tasks: update-cache.yml
   # when: ansible_virtualization_type == 'docker'
 

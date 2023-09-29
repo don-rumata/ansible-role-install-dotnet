@@ -2,6 +2,8 @@
 #--- Release section ---#
 # https://dotnet.microsoft.com/download/dotnet-core
 
+# https://raw.githubusercontent.com/dotnet/core/master/release-notes/releases-index.json
+
 dotnet_support_phase: active
 # dotnet_support_phase: lts
 # dotnet_support_phase: current
@@ -53,3 +55,22 @@ dotnet_repo_rpm_key: https://packages.microsoft.com/keys/microsoft.asc
 # If you *NOT* use apt-cacher-ng or other caching proxy - select "https".
 http_or_https: http
 # http_or_https: https
+
+#--- Apt repo section ---#
+
+# https://repolib.readthedocs.io/en/latest/deb822-format.html
+
+dotnet_apt_repo_architectures:
+  - amd64
+  - arm64
+  - armhf
+dotnet_apt_repo_components:
+  - main
+dotnet_apt_repo_types:
+  - deb
+  # - deb-src
+dotnet_apt_repo_uris:
+  - "{{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_version }}/prod"
+dotnet_apt_repo_x_repolib_name: Official Microsoft repository
+
+dotnet_apt_repo_path_to_sources: /etc/apt/sources.list.d/microsoft.sources

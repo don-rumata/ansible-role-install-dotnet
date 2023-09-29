@@ -1,0 +1,7 @@
+---
+apt_repo_architectures: "{{ dotnet_apt_repo_architectures }}"
+apt_repo_components: "{{ dotnet_apt_repo_components }}"
+apt_repo_types: "{{ dotnet_apt_repo_types }}"
+apt_repo_uris: "{{ dotnet_apt_repo_uris }}"
+apt_repo_x_repolib_name: "{{ dotnet_apt_repo_x_repolib_name }}"
+apt_repo_path_to_sources: "{{ dotnet_apt_repo_path_to_sources }}"

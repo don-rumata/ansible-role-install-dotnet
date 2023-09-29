@@ -1,6 +1,6 @@
 # Ansible Role: Install .NET
 
-[![License][license-image]][license-url] [![Ansible Galaxy][ansible-galaxy-image]][ansible-galaxy-url]
+[![License][license-image]][license-url] [![Ansible Galaxy][ansible-galaxy-image]][ansible-galaxy-url] ![Ansible Role downloads](https://img.shields.io/ansible/role/d/54365)
 
 Install [.NET](https://dotnet.microsoft.com/download) for Linux and Windows.
 
@@ -52,7 +52,10 @@ Install [.NET](https://dotnet.microsoft.com/download) for Linux and Windows.
 #--- Release section ---#
 # https://dotnet.microsoft.com/download/dotnet-core
 
-dotnet_support_phase: lts
+# https://raw.githubusercontent.com/dotnet/core/master/release-notes/releases-index.json
+
+dotnet_support_phase: active
+# dotnet_support_phase: lts
 # dotnet_support_phase: current
 # dotnet_support_phase: preview
 # # dotnet_support_phase: eol
@@ -62,8 +65,17 @@ dotnet_default_component: runtime
 # dotnet_default_component: hosting
 # dotnet_default_component: aspnetcore-runtime
 
+# TODO
+# dotnet_default_component: aspnetcore-targeting-pack-5.0
+
 # dotnet_current_releases_json: https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/5.0/releases.json
 # dotnet_current_channel_version: 5.0
+
+# TODO.
+# dotnet_current_release: 5.0.3
+# dotnet_current_runtime: 5.0.3
+# dotnet_current_sdk: 5.0.200
+# dotnet_current_aspnetcore_runtime:
 
 # For install custom version for Linux. sudo apt-get install dotnet-runtime-5.0=5.0.3-1
 # dotnet_current_version: 5.0.3-1
@@ -93,6 +105,25 @@ dotnet_repo_rpm_key: https://packages.microsoft.com/keys/microsoft.asc
 # If you *NOT* use apt-cacher-ng or other caching proxy - select "https".
 http_or_https: http
 # http_or_https: https
+
+#--- Apt repo section ---#
+
+# https://repolib.readthedocs.io/en/latest/deb822-format.html
+
+dotnet_apt_repo_architectures:
+  - amd64
+  - arm64
+  - armhf
+dotnet_apt_repo_components:
+  - main
+dotnet_apt_repo_types:
+  - deb
+  # - deb-src
+dotnet_apt_repo_uris:
+  - "{{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_version }}/prod"
+dotnet_apt_repo_x_repolib_name: Official Microsoft repository
+
+dotnet_apt_repo_path_to_sources: /etc/apt/sources.list.d/microsoft.sources
 ```
 
 ## Dependencies
