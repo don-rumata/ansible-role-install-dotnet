@@ -8,7 +8,7 @@
   when:
     - ansible_architecture == 'x86_64'
     - dotnet_default_component == 'runtime'
-  become: yes
+  become: true
   snap:
     name: "dotnet-runtime-{{ dotnet_channel_version_fact | replace('.', '') }}"
     state: present
@@ -24,11 +24,11 @@
   when:
     - ansible_architecture == 'x86_64'
     - dotnet_default_component == 'sdk'
-  become: yes
+  become: true
   snap:
     name: dotnet-sdk
     channel: '{{ dotnet_channel_version_fact }}'
-    classic: yes
+    classic: true
     state: present
   tags:
     - linux

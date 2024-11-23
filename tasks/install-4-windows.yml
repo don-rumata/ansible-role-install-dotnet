@@ -4,7 +4,7 @@
     - ansible_os_family == 'Windows'
     - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
     - dotnet_default_component != 'aspnetcore-runtime'
-  become: yes
+  become: true
   become_method: runas
   become_flags: logon_type=new_credentials logon_flags=netcredentials_only
   win_package:
@@ -25,7 +25,7 @@
     - ansible_os_family == 'Windows'
     - ansible_env.PROCESSOR_ARCHITECTURE == 'AMD64'
     - dotnet_default_component == 'aspnetcore-runtime'
-  become: yes
+  become: true
   become_method: runas
   become_flags: logon_type=new_credentials logon_flags=netcredentials_only
   win_package:

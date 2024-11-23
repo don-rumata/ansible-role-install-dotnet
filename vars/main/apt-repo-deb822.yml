@@ -7,7 +7,7 @@
 apt_repo_deb822:
   architectures: "{{ apt_repo_architectures | default('') | join(' ') }}"
   components: "{{ apt_repo_components | default('') | join(' ') }}"
-  enabled: yes
+  enabled: true
   # signed-by: "{{ apt_repo_signed_by | default('') }}"
   suites: "{{ apt_repo_suites | default([ansible_distribution_release]) | join(' ') }}"
   types: "{{ apt_repo_types | default('') | join(' ') }}"

@@ -4,7 +4,7 @@
   uri:
     url: "{{ dotnet_releases_index_json_url }}"
     method: GET
-    return_content: yes
+    return_content: true
   delegate_to: localhost
   register: dotnet_releases_index
 
@@ -111,7 +111,7 @@
   uri:
     url: "{{ dotnet_releases_json_fact }}"
     method: GET
-    return_content: yes
+    return_content: true
   delegate_to: localhost
   register: dotnet_releases_json
 

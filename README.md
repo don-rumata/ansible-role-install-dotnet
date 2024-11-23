@@ -244,6 +244,7 @@ Apache License, Version 2.0
 ## TODO
 
 - Add tests.
+- Add check sha sums: https://dotnetcli.blob.core.windows.net/dotnet/checksums/6.0.26-sha.txt
 
 [license-image]: https://img.shields.io/github/license/don-rumata/ansible-role-install-dotnet.svg
 [license-url]: https://opensource.org/licenses/Apache-2.0

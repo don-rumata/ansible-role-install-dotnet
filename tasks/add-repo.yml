@@ -9,7 +9,7 @@
   when:
     - ansible_os_family == 'Debian'
     - ansible_pkg_mgr == 'apt'
-  become: yes
+  become: true
   apt_key:
     url: "{{ dotnet_repo_deb_key }}"
     state: present
@@ -19,7 +19,7 @@
     - ansible_os_family == 'Debian'
     - ansible_architecture == 'x86_64'
     - ansible_pkg_mgr == 'apt'
-  become: yes
+  become: true
   block:
     - apt_repository:
         repo:
@@ -35,7 +35,7 @@
         mode: '0644'
       register: add_apt_repo
     - apt:
-        update_cache: yes
+        update_cache: true
       when: add_apt_repo.changed == true
   tags:
     - linux
@@ -54,7 +54,7 @@
   when:
     - ansible_os_family == 'RedHat'
     - ansible_pkg_mgr == 'yum'
-  become: yes
+  become: true
   vars:
     # https://stackoverflow.com/a/47091066/5430535
     # https://github.com/ansible/ansible/issues/32532#issuecomment-341641007
@@ -65,8 +65,8 @@
     description: packages-microsoft-com-prod
     baseurl: '{{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_major_version }}/prod'
     gpgkey: '{{ dotnet_repo_rpm_key }}'
-    enabled: yes
-    gpgcheck: yes
+    enabled: true
+    gpgcheck: true
     state: present
 
 # https://packages.microsoft.com/config/fedora/32/prod.repo
@@ -75,15 +75,15 @@
   when:
     - ansible_os_family == 'RedHat'
     - ansible_pkg_mgr == 'dnf'
-  become: yes
+  become: true
   yum_repository:
     file: microsoft-prod
     name: packages-microsoft-com-prod
     description: packages-microsoft-com-prod
     baseurl: '{{ http_or_https }}://packages.microsoft.com/{{ ansible_lsb.id | lower }}/{{ ansible_distribution_major_version }}/prod'
     gpgkey: '{{ dotnet_repo_rpm_key }}'
-    enabled: yes
-    gpgcheck: yes
+    enabled: true
+    gpgcheck: true
     state: present
 
 #---
@@ -96,7 +96,7 @@
     - ansible_os_family == 'Suse'
     - ansible_pkg_mgr == 'zypper'
     - ansible_distribution == 'openSUSE Leap'
-  become: yes
+  become: true
   block:
     - copy:
         content: |
@@ -113,9 +113,9 @@
         name: packages-microsoft-com-prod
         repo: '{{ http_or_https }}://packages.microsoft.com/opensuse/{{ ansible_lsb.major_release }}/prod/'
         state: present
-        auto_import_keys: yes
-        runrefresh: yes
-        autorefresh: yes
+        auto_import_keys: true
+        runrefresh: true
+        autorefresh: true
 
 - name: Add repo dotnet 4 openSUSE Tumbleweed
   when:
